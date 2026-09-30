@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Chi va là? — Le Camelie d'autunno</title>
+<style>
+  :root { --verde:#2f5d3a; --arancio:#c4622d; --scuro:#12170f; --chiaro:#f3f6ef; }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body { margin:0; padding:0; background:var(--scuro); color:var(--chiaro);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+  body { min-height:100dvh; display:flex; flex-direction:column; padding:16px; padding-bottom:max(16px,env(safe-area-inset-bottom)); }
+  header { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+  .badge { flex:0 0 46px; height:46px; border-radius:50%; background:var(--arancio); color:#fff;
+    display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:800; }
+  header h1 { font-size:15px; margin:0; letter-spacing:0.3px; }
+  header p { margin:2px 0 0; font-size:12px; color:#9bab93; }
+
+  video { width:100%; border-radius:14px; background:#000; display:block; aspect-ratio:16/9; object-fit:cover; }
+  .card { background:#1c2318; border:1px solid #2c3826; border-radius:14px; padding:14px 16px; margin-top:14px; }
+  .card h2 { margin:0 0 6px; font-size:14px; color:#a8c79b; text-transform:uppercase; letter-spacing:1.2px; }
+  .card p { margin:0; font-size:15px; line-height:1.5; }
+  .hint { border-left:3px solid var(--arancio); padding-left:12px; margin-top:14px; font-size:14px; line-height:1.5; color:#d6e0cf; }
+  .hint b { color:var(--arancio); }
+
+  button { width:100%; margin-top:14px; padding:15px; border:none; border-radius:12px; font-size:16px;
+    font-weight:700; background:var(--verde); color:#fff; }
+  button.ghost { background:transparent; border:1.5px solid #3b4b34; color:#b9c9b0; }
+  button:disabled { opacity:.5; }
+
+  .bar { height:10px; border-radius:5px; background:#2c3826; overflow:hidden; margin-top:14px; }
+  .bar i { display:block; height:100%; width:0; background:var(--arancio); transition:width .3s; }
+  footer { margin-top:auto; padding-top:18px; font-size:11px; color:#6d7d65; text-align:center; line-height:1.5; }
+  .lista { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:12px; }
+  .lista a { display:block; text-align:center; padding:12px 0; border-radius:10px; background:#1c2318;
+    border:1px solid #2c3826; color:#b9c9b0; text-decoration:none; font-weight:700; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge" id="badge">?</div>
+  <div>
+    <h1 id="titolo">Chi va là?</h1>
+    <p id="occhiello">Le Camelie d'autunno · Sant'Andrea di Compito</p>
+  </div>
+</header>
+
+<main id="app"></main>
+
+<footer>
+  Attività a cura dello stand fototrappole · Centro Culturale Compitese<br>
+  Non condividere le risposte: rovini il gioco a chi arriva dopo di te 🦊
+</footer>
+
+<script>
+/* ------------------------------------------------------------------
+   CONFIGURAZIONE — è l'unica parte da modificare.
+   Per ogni tappa: il file video e il suggerimento mostrato sotto.
+   NON scrivere qui il nome dell'animale: la pagina non deve svelarlo.
+------------------------------------------------------------------- */
+const TAPPE = {
+  1: { video:"video/t1.mp4", hint:"Il video è a <b>colori</b> o in <b>bianco e nero</b>? Il bianco e nero vuol dire infrarossi: siamo di notte." },
+  2: { video:"video/t2.mp4", hint:"<b>Conta gli individui</b> e guarda il video fino in fondo." },
+  3: { video:"video/t3.mp4", hint:"Cerca <b>data, ora e temperatura</b> stampate sull'immagine." },
+  4: { video:"video/t4.mp4", hint:"<b>Come si muove?</b> Annusa, scava, bruca, corre via?" },
+  5: { video:"video/t5.mp4", hint:"Guarda la <b>taglia</b>: confrontalo con l'erba o il muretto accanto." },
+  6: { video:"video/t6.mp4", hint:"Occhio alla <b>coda</b>: forma e lunghezza distinguono specie simili." },
+  7: { video:"video/t7.mp4", hint:"Gli occhi brillano? È il <i>tapetum lucidum</i>, lo specchio che gli animali notturni hanno dietro la retina." },
+  8: { video:"video/t8.mp4", hint:"<b>Riguardalo.</b> La seconda visione vale più della prima." },
+  9: { video:"video/t9.mp4", hint:"Ultima tappa: componi la <b>parola</b> con le nove lettere e torna allo stand." },
+};
+const CACHE = "chivala-v1";
+
+const app = document.getElementById("app");
+const badge = document.getElementById("badge");
+const titolo = document.getElementById("titolo");
+const occhiello = document.getElementById("occhiello");
+
+async function sorgente(url) {
+  try {
+    const c = await caches.open(CACHE);
+    const hit = await c.match(url);
+    if (hit) return URL.createObjectURL(await hit.blob());
+  } catch (e) {}
+  return url;
+}
+
+async function mostraTappa(n) {
+  const t = TAPPE[n];
+  badge.textContent = n;
+  titolo.textContent = "Tappa " + n;
+  occhiello.textContent = "Chi è passato di qui?";
+  app.innerHTML = `
+    <video id="v" playsinline controls autoplay muted loop preload="auto"></video>
+    <div class="hint">🔎 ${t.hint}</div>
+    <div class="card">
+      <h2>Ora tocca a te</h2>
+      <p>Riconosci l'animale, cercalo nella legenda della scheda e copia la sua <b>lettera</b>
+      nella riga della tappa ${n}. Segna anche se è passato di <b>giorno</b> o di <b>notte</b>.</p>
+    </div>
+    <button class="ghost" onclick="document.getElementById('v').play()">↻ Riguarda il video</button>`;
+  document.getElementById("v").src = await sorgente(t.video);
+}
+
+function mostraHome() {
+  badge.textContent = "🦊";
+  titolo.textContent = "Chi va là?";
+  occhiello.textContent = "Gli animali invisibili del Borgo delle Camelie";
+  app.innerHTML = `
+    <div class="card">
+      <h2>Prima di partire</h2>
+      <p>Tocca il pulsante qui sotto <b>mentre sei allo stand, con il wi-fi o il campo buono</b>:
+      i nove video vengono scaricati sul telefono, così funzionano anche dove non prende.</p>
+      <div class="bar"><i id="prog"></i></div>
+      <button id="pre">⬇ Scarica i video (circa 15 MB)</button>
+      <p id="stato" style="font-size:13px;color:#9bab93;margin-top:10px"></p>
+    </div>
+    <div class="card">
+      <h2>Come si legge una tappa</h2>
+      <p>Appoggia la parte alta del telefono sul cerchio del cartello (NFC) oppure inquadra il QR code.
+      Parte il video girato da quella fototrappola.</p>
+      <div class="lista">
+        ${Object.keys(TAPPE).map(n => `<a href="#${n}">${n}</a>`).join("")}
+      </div>
+    </div>`;
+
+  document.getElementById("pre").onclick = async (e) => {
+    const btn = e.target, prog = document.getElementById("prog"), stato = document.getElementById("stato");
+    btn.disabled = true; btn.textContent = "Scaricamento…";
+    const urls = Object.values(TAPPE).map(t => t.video);
+    let fatti = 0;
+    try {
+      const c = await caches.open(CACHE);
+      for (const u of urls) {
+        try { await c.add(u); } catch (err) {}
+        fatti++; prog.style.width = (fatti / urls.length * 100) + "%";
+      }
+      btn.textContent = "✓ Video pronti"; stato.textContent = "Puoi partire: funzionerà anche senza campo.";
+    } catch (err) {
+      btn.textContent = "Scaricamento non riuscito";
+      stato.textContent = "Nessun problema: i video si apriranno comunque, serve solo un po' di rete.";
+    }
+  };
+}
+
+function instrada() {
+  const n = parseInt(location.hash.replace("#", ""), 10);
+  if (TAPPE[n]) mostraTappa(n); else mostraHome();
+}
+addEventListener("hashchange", instrada);
+instrada();
+</script>
+</body>
+</html>
