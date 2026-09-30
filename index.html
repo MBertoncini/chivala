@@ -3,150 +3,147 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Chi va là? — Le Camelie d'autunno</title>
+<meta name="theme-color" content="#ffffff">
+<meta name="robots" content="noindex">
+<title>Chi va là?</title>
 <style>
-  :root { --verde:#2f5d3a; --arancio:#c4622d; --scuro:#12170f; --chiaro:#f3f6ef; }
-  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-  html,body { margin:0; padding:0; background:var(--scuro); color:var(--chiaro);
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
-  body { min-height:100dvh; display:flex; flex-direction:column; padding:16px; padding-bottom:max(16px,env(safe-area-inset-bottom)); }
-  header { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
-  .badge { flex:0 0 46px; height:46px; border-radius:50%; background:var(--arancio); color:#fff;
-    display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:800; }
-  header h1 { font-size:15px; margin:0; letter-spacing:0.3px; }
-  header p { margin:2px 0 0; font-size:12px; color:#9bab93; }
+  * { box-sizing: border-box; margin: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    min-height: 100dvh; display: flex; flex-direction: column;
+    padding: 16px max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+    background: #fff; color: #000; font: 17px/1.4 Arial, Helvetica, sans-serif;
+  }
+  body.partenza .testata { visibility: hidden; }
+  .testata { font-size: 12px; font-weight: bold; text-transform: uppercase; color: #000; text-decoration: none; }
+  main { flex: 1; width: 100%; max-width: 960px; margin: 0 auto; }
 
-  video { width:100%; border-radius:14px; background:#000; display:block; aspect-ratio:16/9; object-fit:cover; }
-  .card { background:#1c2318; border:1px solid #2c3826; border-radius:14px; padding:14px 16px; margin-top:14px; }
-  .card h2 { margin:0 0 6px; font-size:14px; color:#a8c79b; text-transform:uppercase; letter-spacing:1.2px; }
-  .card p { margin:0; font-size:15px; line-height:1.5; }
-  .hint { border-left:3px solid var(--arancio); padding-left:12px; margin-top:14px; font-size:14px; line-height:1.5; color:#d6e0cf; }
-  .hint b { color:var(--arancio); }
+  /* tappa */
+  .tappa { display: grid; gap: 14px; margin-top: 14px; }
+  .intesta { display: flex; align-items: center; gap: 14px; }
+  .numero { font-size: 64px; font-weight: bold; line-height: .9; }
+  .numero small { display: block; font-size: 11px; margin-top: 4px; }
+  h1 { font-size: clamp(22px, 6vw, 32px); line-height: 1.1; }
+  video { display: block; width: 100%; aspect-ratio: 16 / 9; background: #000; object-fit: contain; }
+  .domanda { font-size: 17px; }
+  .errore { font-size: 15px; }
 
-  button { width:100%; margin-top:14px; padding:15px; border:none; border-radius:12px; font-size:16px;
-    font-weight:700; background:var(--verde); color:#fff; }
-  button.ghost { background:transparent; border:1.5px solid #3b4b34; color:#b9c9b0; }
-  button:disabled { opacity:.5; }
+  @media (orientation: landscape) and (max-height: 560px) {
+    body { padding-top: 10px; }
+    .tappa { grid-template-columns: minmax(150px, 1fr) 3fr; grid-template-rows: auto 1fr; align-items: start; margin-top: 8px; }
+    .intesta { flex-direction: column; align-items: flex-start; gap: 10px; }
+    video { grid-column: 2; grid-row: 1 / span 2; height: calc(100dvh - 60px); aspect-ratio: auto; }
+    .domanda { grid-column: 1; grid-row: 2; font-size: 15px; }
+    .tappa h1 { font-size: 20px; }
+  }
 
-  .bar { height:10px; border-radius:5px; background:#2c3826; overflow:hidden; margin-top:14px; }
-  .bar i { display:block; height:100%; width:0; background:var(--arancio); transition:width .3s; }
-  footer { margin-top:auto; padding-top:18px; font-size:11px; color:#6d7d65; text-align:center; line-height:1.5; }
-  .lista { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:12px; }
-  .lista a { display:block; text-align:center; padding:12px 0; border-radius:10px; background:#1c2318;
-    border:1px solid #2c3826; color:#b9c9b0; text-decoration:none; font-weight:700; }
+  /* partenza */
+  .home { margin-top: 18vh; max-width: 30em; }
+  .home h1 { font-size: clamp(40px, 12vw, 64px); }
+  .home .sotto { margin-top: 6px; }
+  .home p.nota { margin-top: 32px; }
+  button {
+    display: block; width: 100%; margin-top: 14px; padding: 16px; border: 2px solid #000;
+    border-radius: 0; font: bold 17px Arial, Helvetica, sans-serif; color: #fff; cursor: pointer;
+    background: linear-gradient(to right, #000 var(--p, 100%), #666 var(--p, 100%));
+  }
+  button:disabled { cursor: default; }
+  .fatto { background: #fff; color: #000; }
+
+  footer { margin-top: 24px; font-size: 12px; }
+  footer:empty { display: none; }
 </style>
 </head>
 <body>
-
-<header>
-  <div class="badge" id="badge">?</div>
-  <div>
-    <h1 id="titolo">Chi va là?</h1>
-    <p id="occhiello">Le Camelie d'autunno · Sant'Andrea di Compito</p>
-  </div>
-</header>
-
+<a class="testata" href="./">Chi va là? · Le Camelie d'autunno</a>
 <main id="app"></main>
-
-<footer>
-  Attività a cura dello stand fototrappole · Centro Culturale Compitese<br>
-  Non condividere le risposte: rovini il gioco a chi arriva dopo di te 🦊
-</footer>
+<footer id="piede"></footer>
 
 <script>
-/* ------------------------------------------------------------------
-   CONFIGURAZIONE — è l'unica parte da modificare.
-   Per ogni tappa: il file video e il suggerimento mostrato sotto.
-   NON scrivere qui il nome dell'animale: la pagina non deve svelarlo.
-------------------------------------------------------------------- */
-const TAPPE = {
-  1: { video:"video/t1.mp4", hint:"Il video è a <b>colori</b> o in <b>bianco e nero</b>? Il bianco e nero vuol dire infrarossi: siamo di notte." },
-  2: { video:"video/t2.mp4", hint:"<b>Conta gli individui</b> e guarda il video fino in fondo." },
-  3: { video:"video/t3.mp4", hint:"Cerca <b>data, ora e temperatura</b> stampate sull'immagine." },
-  4: { video:"video/t4.mp4", hint:"<b>Come si muove?</b> Annusa, scava, bruca, corre via?" },
-  5: { video:"video/t5.mp4", hint:"Guarda la <b>taglia</b>: confrontalo con l'erba o il muretto accanto." },
-  6: { video:"video/t6.mp4", hint:"Occhio alla <b>coda</b>: forma e lunghezza distinguono specie simili." },
-  7: { video:"video/t7.mp4", hint:"Gli occhi brillano? È il <i>tapetum lucidum</i>, lo specchio che gli animali notturni hanno dietro la retina." },
-  8: { video:"video/t8.mp4", hint:"<b>Riguardalo.</b> La seconda visione vale più della prima." },
-  9: { video:"video/t9.mp4", hint:"Ultima tappa: componi la <b>parola</b> con le nove lettere e torna allo stand." },
-};
-const CACHE = "chivala-v1";
-
+// I video sono video/t1.mp4 … video/t9.mp4. La pagina non scrive mai il nome dell'animale.
+const TAPPE = 9;
+const CACHE = "chivala-v2";
+const video = n => `video/t${n}.mp4`;
 const app = document.getElementById("app");
-const badge = document.getElementById("badge");
-const titolo = document.getElementById("titolo");
-const occhiello = document.getElementById("occhiello");
+const piede = document.getElementById("piede");
+
+// via le cache di versioni precedenti
+if (window.caches) caches.keys().then(ks => ks.filter(k => k.startsWith("chivala-") && k !== CACHE).forEach(k => caches.delete(k)));
 
 async function sorgente(url) {
   try {
-    const c = await caches.open(CACHE);
-    const hit = await c.match(url);
+    const hit = await (await caches.open(CACHE)).match(url);
     if (hit) return URL.createObjectURL(await hit.blob());
   } catch (e) {}
   return url;
 }
 
 async function mostraTappa(n) {
-  const t = TAPPE[n];
-  badge.textContent = n;
-  titolo.textContent = "Tappa " + n;
-  occhiello.textContent = "Chi è passato di qui?";
+  document.title = `Tappa ${n} · Chi va là?`;
+  document.body.classList.remove("partenza");
+  piede.textContent = "";
   app.innerHTML = `
-    <video id="v" playsinline controls autoplay muted loop preload="auto"></video>
-    <div class="hint">🔎 ${t.hint}</div>
-    <div class="card">
-      <h2>Ora tocca a te</h2>
-      <p>Riconosci l'animale, cercalo nella legenda della scheda e copia la sua <b>lettera</b>
-      nella riga della tappa ${n}. Segna anche se è passato di <b>giorno</b> o di <b>notte</b>.</p>
-    </div>
-    <button class="ghost" onclick="document.getElementById('v').play()">↻ Riguarda il video</button>`;
-  document.getElementById("v").src = await sorgente(t.video);
+    <section class="tappa">
+      <div class="intesta">
+        <div class="numero">${n}<small>TAPPA</small></div>
+        <h1>Chi è passato di qui?</h1>
+      </div>
+      <video id="v" playsinline controls autoplay muted loop preload="auto"></video>
+      <p class="domanda">Che animale è? Di giorno o di notte? Quanti sono?</p>
+    </section>`;
+  const v = document.getElementById("v");
+  v.onerror = () => {
+    v.insertAdjacentHTML("afterend", `<p class="errore">Il video non si apre: serve un po' di campo. Riprova tra qualche passo.</p>`);
+  };
+  v.src = await sorgente(video(n));
+}
+
+async function giaScaricati() {
+  try {
+    const c = await caches.open(CACHE);
+    for (let n = 1; n <= TAPPE; n++) if (!(await c.match(video(n)))) return false;
+    return true;
+  } catch (e) { return false; }
 }
 
 function mostraHome() {
-  badge.textContent = "🦊";
-  titolo.textContent = "Chi va là?";
-  occhiello.textContent = "Gli animali invisibili del Borgo delle Camelie";
+  document.title = "Chi va là?";
+  document.body.classList.add("partenza");
+  piede.textContent = "Sant'Andrea di Compito · Centro Culturale Compitese";
   app.innerHTML = `
-    <div class="card">
-      <h2>Prima di partire</h2>
-      <p>Tocca il pulsante qui sotto <b>mentre sei allo stand, con il wi-fi o il campo buono</b>:
-      i nove video vengono scaricati sul telefono, così funzionano anche dove non prende.</p>
-      <div class="bar"><i id="prog"></i></div>
-      <button id="pre">⬇ Scarica i video (circa 15 MB)</button>
-      <p id="stato" style="font-size:13px;color:#9bab93;margin-top:10px"></p>
-    </div>
-    <div class="card">
-      <h2>Come si legge una tappa</h2>
-      <p>Appoggia la parte alta del telefono sul cerchio del cartello (NFC) oppure inquadra il QR code.
-      Parte il video girato da quella fototrappola.</p>
-      <div class="lista">
-        ${Object.keys(TAPPE).map(n => `<a href="#${n}">${n}</a>`).join("")}
-      </div>
-    </div>`;
+    <section class="home">
+      <h1>Chi va là?</h1>
+      <p class="sotto">Gli animali invisibili del Borgo delle Camelie</p>
+      <p class="nota">Scarica i video adesso, allo stand: poi si aprono anche dove non c'è campo.</p>
+      <button id="scarica">Scarica i video (13 MB)</button>
+    </section>`;
+  const b = document.getElementById("scarica");
+  const pronto = () => { b.textContent = "Video scaricati"; b.classList.add("fatto"); b.disabled = true; };
+  giaScaricati().then(ok => ok && pronto());
 
-  document.getElementById("pre").onclick = async (e) => {
-    const btn = e.target, prog = document.getElementById("prog"), stato = document.getElementById("stato");
-    btn.disabled = true; btn.textContent = "Scaricamento…";
-    const urls = Object.values(TAPPE).map(t => t.video);
-    let fatti = 0;
+  b.onclick = async () => {
+    b.disabled = true;
+    let fatti = 0, falliti = 0;
     try {
       const c = await caches.open(CACHE);
-      for (const u of urls) {
-        try { await c.add(u); } catch (err) {}
-        fatti++; prog.style.width = (fatti / urls.length * 100) + "%";
+      for (let n = 1; n <= TAPPE; n++) {
+        b.style.setProperty("--p", `${fatti / TAPPE * 100}%`);
+        b.textContent = `Scaricamento ${fatti + 1} di ${TAPPE}`;
+        try { await c.add(video(n)); } catch (e) { falliti++; }
+        fatti++;
       }
-      btn.textContent = "✓ Video pronti"; stato.textContent = "Puoi partire: funzionerà anche senza campo.";
-    } catch (err) {
-      btn.textContent = "Scaricamento non riuscito";
-      stato.textContent = "Nessun problema: i video si apriranno comunque, serve solo un po' di rete.";
-    }
+    } catch (e) { falliti = TAPPE; }
+    b.style.removeProperty("--p");
+    if (!falliti) return pronto();
+    b.disabled = false;
+    b.textContent = "Non tutti scaricati: riprova";
   };
 }
 
 function instrada() {
-  const n = parseInt(location.hash.replace("#", ""), 10);
-  if (TAPPE[n]) mostraTappa(n); else mostraHome();
+  const n = parseInt(location.hash.slice(1), 10);
+  n >= 1 && n <= TAPPE ? mostraTappa(n) : mostraHome();
+  scrollTo(0, 0);
 }
 addEventListener("hashchange", instrada);
 instrada();
