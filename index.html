@@ -67,6 +67,9 @@ const video = n => `video/t${n}.mp4`;
 const app = document.getElementById("app");
 const piede = document.getElementById("piede");
 
+// sw.js salva la pagina, per aprirla anche senza campo
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+
 // via le cache di versioni precedenti
 if (window.caches) caches.keys().then(ks => ks.filter(k => k.startsWith("chivala-") && k !== CACHE).forEach(k => caches.delete(k)));
 
@@ -132,6 +135,7 @@ function mostraHome() {
         try { await c.add(video(n)); } catch (e) { falliti++; }
         fatti++;
       }
+      try { await c.add("./"); } catch (e) { falliti++; }
     } catch (e) { falliti = TAPPE; }
     b.style.removeProperty("--p");
     if (!falliti) return pronto();
