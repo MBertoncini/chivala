@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Com'è fatta una fototrappola</title>
+<link rel="stylesheet" href="font/fonts.css">
+<style>
+  @page { size: A4; margin: 0; }
+  :root {
+    --ink: #1d1d1a;
+    --soft: #55554d;
+    --rule: #c8c4b8;
+    --tint: #f3f1ea;
+    --day: #b8740f;
+    --night: #2c3a55;
+    --ir: #8e2a21;
+    --heat: #d0742a;
+    --serif: 'Source Serif 4', Georgia, serif;
+    --sans: 'IBM Plex Sans Condensed', 'Arial Narrow', Arial, sans-serif;
+    --mono: 'IBM Plex Mono', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { background: #fff; color: var(--ink); font: 400 10.2pt/1.42 var(--serif); font-optical-sizing: auto; }
+
+  .page {
+    width: 210mm; height: 297mm; padding: 12mm 14mm 11mm;
+    position: relative; overflow: hidden; page-break-after: always;
+    display: flex; flex-direction: column;
+  }
+  .page:last-child { page-break-after: auto; }
+  .testa, .piede {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font: 600 7.4pt/1 var(--sans); letter-spacing: .09em; text-transform: uppercase; color: var(--soft);
+  }
+  .testa { border-bottom: .6pt solid var(--ink); padding-bottom: 2.2mm; margin-bottom: 6mm; }
+  .piede { margin-top: auto; border-top: .4pt solid var(--rule); padding-top: 2mm; font-weight: 500; letter-spacing: .05em; }
+  .testa b { color: var(--ink); font-weight: 700; }
+
+  .occhiello { font: 600 8.4pt/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--soft); margin-bottom: 2.4mm; }
+  .occhiello span { display: inline-block; min-width: 5.4mm; height: 5.4mm; line-height: 5.4mm; text-align: center; border-radius: 50%; background: var(--ink); color: #fff; letter-spacing: 0; margin-right: 2mm; }
+  h1 { font: 600 30pt/1.02 var(--serif); letter-spacing: -.012em; margin-bottom: 3.5mm; }
+  h2 { font: 600 19pt/1.08 var(--serif); letter-spacing: -.008em; margin-bottom: 2.6mm; }
+  h3 { font: 700 8.6pt/1.2 var(--sans); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 1.4mm; }
+  .attacco { font-size: 11.6pt; line-height: 1.42; max-width: 158mm; }
+  .attacco em { font-style: italic; }
+  p + p { margin-top: 1.6mm; }
+
+  figure { margin: 0; }
+  figcaption { font: 400 7.9pt/1.32 var(--sans); color: var(--soft); margin-top: 1.6mm; }
+  figcaption b { color: var(--ink); font-weight: 600; }
+  .fig-n { font-weight: 700; color: var(--ink); letter-spacing: .04em; margin-right: 1.2mm; }
+  svg { display: block; width: 100%; height: auto; }
+  svg text { font-family: var(--sans); }
+
+  /* pagina 1 */
+  .disegni { display: grid; grid-template-columns: 1fr 1fr; gap: 6mm; margin-top: 5mm; }
+  .legenda { columns: 3; column-gap: 6mm; margin-top: 4mm; font: 400 8.5pt/1.3 var(--sans); }
+  .legenda li { list-style: none; break-inside: avoid; display: grid; grid-template-columns: 5mm 1fr; margin-bottom: 2mm; }
+  .legenda li::before { content: attr(data-n); display: block; width: 3.9mm; height: 3.9mm; border-radius: 50%; background: var(--ink); color: #fff; font: 700 6.6pt/3.9mm var(--sans); text-align: center; margin-top: .2mm; }
+  .legenda b { font-weight: 600; }
+  .numeri { display: grid; grid-template-columns: repeat(5, 1fr); border-top: .6pt solid var(--ink); border-bottom: .6pt solid var(--ink); margin-top: 3mm; }
+  .numeri div { padding: 2.2mm 2.6mm 2.4mm; border-left: .4pt solid var(--rule); }
+  .numeri div:first-child { border-left: 0; padding-left: 0; }
+  .numeri strong { display: block; font: 600 15pt/1.05 var(--serif); }
+  .numeri span { display: block; font: 400 7.6pt/1.25 var(--sans); color: var(--soft); margin-top: .8mm; }
+  .nota-num { font: italic 7.6pt/1.3 var(--serif); color: var(--soft); margin-top: 1.4mm; }
+
+  /* pagina 2 */
+  .due { display: grid; grid-template-columns: 1fr 1fr; gap: 7mm; }
+  .riquadro { background: var(--tint); padding: 3.6mm 4mm 3.8mm; }
+  .riquadro ul { list-style: none; font-size: 9pt; line-height: 1.33; }
+  .riquadro li { padding-left: 3.6mm; position: relative; }
+  .riquadro li + li { margin-top: 1.5mm; }
+  .riquadro li::before { content: ""; position: absolute; left: 0; top: 2.1mm; width: 1.5mm; height: .5mm; background: var(--ink); }
+  .blocco { margin-top: 5mm; }
+  .fig-lato { display: grid; grid-template-columns: 1fr 39mm; gap: 5mm; align-items: end; }
+  .fig-lato figcaption { margin-top: 0; padding-bottom: 1mm; border-top: .6pt solid var(--ink); padding-top: 1.6mm; }
+  .fig-lato figcaption .fig-n { display: block; margin-bottom: .8mm; }
+
+  /* pagina 3 */
+  .coppia { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+  .coppia img { display: block; width: 100%; height: auto; }
+  .etichetta { display: inline-block; font: 700 7.4pt/1 var(--sans); letter-spacing: .12em; text-transform: uppercase; padding: 1.1mm 1.8mm; color: #fff; margin-bottom: 1.4mm; }
+  .et-giorno { background: var(--day); }
+  .et-notte { background: var(--night); }
+  table.confronto { width: 100%; border-collapse: collapse; font: 400 8.7pt/1.3 var(--sans); }
+  .confronto th, .confronto td { text-align: left; vertical-align: top; padding: 1mm 2.4mm 1mm 0; border-bottom: .4pt solid var(--rule); }
+  .confronto thead th { font: 700 7.6pt/1 var(--sans); letter-spacing: .12em; text-transform: uppercase; border-bottom: .8pt solid var(--ink); padding-bottom: 1.6mm; }
+  .confronto thead th.g { color: var(--day); }
+  .confronto thead th.n { color: var(--night); }
+  .confronto tbody th { font-weight: 600; width: 22mm; }
+  .confronto tbody tr:last-child > * { border-bottom: 0; }
+  .confronto td { width: 78mm; }
+
+  /* pagina 4 */
+  .foto-nota { position: relative; }
+  .foto-nota img { display: block; width: 100%; height: auto; }
+  .foto-nota svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .coppia figcaption { min-height: 0; }
+  .prova { border: .8pt solid var(--ink); padding: 3.6mm 4.2mm 4mm; }
+  .prova ol { list-style: none; counter-reset: q; font-size: 9.6pt; line-height: 1.36; }
+  .prova li { counter-increment: q; padding-left: 6mm; position: relative; }
+  .prova li + li { margin-top: 1.6mm; }
+  .prova li::before { content: counter(q); position: absolute; left: 0; top: .1mm; font: 700 9pt/1.3 var(--sans); }
+  .crediti { font: 400 6.9pt/1.35 var(--sans); color: var(--soft); margin-top: 4mm; }
+  .crediti b { color: var(--ink); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<!-- ============================ PAGINA 1 ============================ -->
+<section class="page">
+  <div class="testa"><span><b>Chi va là?</b> · Gli animali invisibili del Borgo delle Camelie</span><span>La fototrappola</span></div>
+
+  <div class="occhiello"><span>1</span>Com'è fatta</div>
+  <h1>Una macchina fotografica<br>che aspetta da sola nel bosco</h1>
+  <p class="attacco">La fototrappola è una piccola fotocamera chiusa in una scatola impermeabile. Si lega a un tronco e resta lì per settimane, senza nessuno. Non riprende in continuazione: dorme, e si sveglia solo quando davanti le passa <em>qualcosa di caldo che si muove</em>. Allora scatta una foto o gira un breve video, di giorno a colori e di notte in bianco e nero.</p>
+
+  <div class="disegni">
+    <figure>
+      <svg viewBox="0 0 360 410" aria-label="Fototrappola vista di fronte">
+        <defs>
+          <clipPath id="scocca"><rect x="75" y="18" width="210" height="362" rx="30"/></clipPath>
+          <radialGradient id="led" cx=".38" cy=".34" r=".7">
+            <stop offset="0" stop-color="#9a5a50"/><stop offset=".42" stop-color="#43231f"/><stop offset="1" stop-color="#161513"/>
+          </radialGradient>
+          <radialGradient id="vetro" cx=".36" cy=".32" r=".75">
+            <stop offset="0" stop-color="#5b7a8c"/><stop offset=".35" stop-color="#1c2b36"/><stop offset="1" stop-color="#05080a"/>
+          </radialGradient>
+          <linearGradient id="pir" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#f1eee4"/><stop offset="1" stop-color="#d6d1c0"/>
+          </linearGradient>
+        </defs>
+
+        <!-- cinghia dietro la scocca -->
+        <path d="M44 176 h272 l6 13 l-6 13 h-272 l-6 -13z" fill="#2f2e27"/>
+        <path d="M48 181 h264 M48 197 h264" stroke="#57554a" stroke-width=".8" stroke-dasharray="3 2.4"/>
+
+        <!-- scocca mimetica -->
+        <g clip-path="url(#scocca)">
+          <rect x="75" y="18" width="210" height="362" fill="#8a8463"/>
+          <path d="M70 40 C100 22 140 44 128 72 C118 96 84 90 74 112 Z" fill="#6d6a4d"/>
+          <path d="M210 10 C250 16 296 40 286 80 C262 70 238 92 214 70 C196 52 196 26 210 10Z" fill="#a49d7b"/>
+          <path d="M70 230 C96 214 118 236 112 262 C106 290 80 300 70 320Z" fill="#a49d7b"/>
+          <path d="M290 200 C262 210 246 240 262 262 C276 282 296 270 296 250Z" fill="#5a5840"/>
+          <path d="M120 330 C150 306 196 318 210 342 C226 370 180 396 140 388 C112 382 102 348 120 330Z" fill="#6d6a4d"/>
+          <path d="M228 300 C252 296 282 312 290 340 L290 390 L236 390 C250 364 220 330 228 300Z" fill="#a49d7b"/>
+          <path d="M80 136 C92 128 104 140 98 152 C92 166 80 160 74 168Z" fill="#5a5840"/>
+          <path d="M146 300 C160 292 176 300 172 312 C166 324 150 322 146 300Z" fill="#5a5840"/>
+        </g>
+        <rect x="75" y="18" width="210" height="362" rx="30" fill="none" stroke="#3c3a2e" stroke-width="1.4"/>
+
+        <!-- ganci di chiusura -->
+        <rect x="281" y="86" width="13" height="46" rx="3" fill="#2f2e27"/>
+        <rect x="281" y="276" width="13" height="46" rx="3" fill="#2f2e27"/>
+        <line x1="287.5" y1="94" x2="287.5" y2="124" stroke="#57554a" stroke-width="1.2"/>
+        <line x1="287.5" y1="284" x2="287.5" y2="314" stroke="#57554a" stroke-width="1.2"/>
+        <!-- occhiello per il lucchetto -->
+        <path d="M244 380 v12 a8 8 0 0 0 8 8 h10 a8 8 0 0 0 8 -8 v-12" fill="none" stroke="#2f2e27" stroke-width="5"/>
+
+        <!-- pannello scuro: LED, obiettivo, sensore di luce -->
+        <rect x="98" y="40" width="164" height="204" rx="16" fill="#252521" stroke="#141412" stroke-width="1"/>
+        <rect x="106" y="50" width="148" height="80" rx="9" fill="#1a1a17"/>
+        <g>
+          <!-- 9 x 4 LED -->
+          <g id="fila">
+            <circle cx="116" cy="62" r="6" fill="url(#led)"/><circle cx="132" cy="62" r="6" fill="url(#led)"/><circle cx="148" cy="62" r="6" fill="url(#led)"/>
+            <circle cx="164" cy="62" r="6" fill="url(#led)"/><circle cx="180" cy="62" r="6" fill="url(#led)"/><circle cx="196" cy="62" r="6" fill="url(#led)"/>
+            <circle cx="212" cy="62" r="6" fill="url(#led)"/><circle cx="228" cy="62" r="6" fill="url(#led)"/><circle cx="244" cy="62" r="6" fill="url(#led)"/>
+          </g>
+          <use href="#fila" y="18"/><use href="#fila" y="36"/><use href="#fila" y="54"/>
+        </g>
+        <!-- obiettivo -->
+        <circle cx="180" cy="186" r="38" fill="#121210"/>
+        <circle cx="180" cy="186" r="31" fill="#3a3a35"/>
+        <circle cx="180" cy="186" r="26" fill="url(#vetro)"/>
+        <circle cx="180" cy="186" r="13" fill="none" stroke="#2c4250" stroke-width="1"/>
+        <ellipse cx="171" cy="176" rx="7" ry="4.5" fill="#cfe1ea" opacity=".55" transform="rotate(-30 171 176)"/>
+        <!-- sensore di luce -->
+        <circle cx="238" cy="150" r="6" fill="#121210"/>
+        <circle cx="238" cy="150" r="3.6" fill="#c8b98e"/>
+        <path d="M236.2 148.6 q1.8 1.4 3.6 0 M236.2 151.2 q1.8 1.4 3.6 0" stroke="#7a6a44" stroke-width=".6" fill="none"/>
+
+        <!-- sensore PIR con lente di Fresnel -->
+        <rect x="140" y="262" width="80" height="50" rx="11" fill="#2a2a25"/>
+        <rect x="145" y="267" width="70" height="40" rx="8" fill="url(#pir)"/>
+        <g stroke="#bdb7a3" stroke-width=".8">
+          <path d="M152 268v38 M159 268v38 M166 268v38 M173 268v38 M180 268v38 M187 268v38 M194 268v38 M201 268v38 M208 268v38"/>
+          <path d="M146 280h68 M146 294h68"/>
+        </g>
+        <!-- spia -->
+        <circle cx="236" cy="287" r="4.2" fill="#2a2a25"/>
+        <circle cx="236" cy="287" r="2.6" fill="#a3271e"/>
+
+        <!-- richiami -->
+        <g stroke="#1d1d1a" stroke-width=".8" fill="none">
+          <path d="M106 70 H40"/>
+          <path d="M150 210 L118 236 H40"/>
+          <path d="M145 296 L120 330 H40"/>
+          <path d="M66 189 H40"/>
+          <path d="M244 150 H320"/>
+          <path d="M240 287 H320"/>
+          <path d="M294 110 H320"/>
+          <path d="M266 400 L280 396 H320"/>
+        </g>
+        <g font-size="9" font-weight="700" text-anchor="middle" fill="#fff">
+          <circle cx="32" cy="70" r="7.5" fill="#1d1d1a"/><text x="32" y="73.2">1</text>
+          <circle cx="32" cy="236" r="7.5" fill="#1d1d1a"/><text x="32" y="239.2">2</text>
+          <circle cx="32" cy="330" r="7.5" fill="#1d1d1a"/><text x="32" y="333.2">3</text>
+          <circle cx="328" cy="150" r="7.5" fill="#1d1d1a"/><text x="328" y="153.2">4</text>
+          <circle cx="328" cy="287" r="7.5" fill="#1d1d1a"/><text x="328" y="290.2">5</text>
+          <circle cx="32" cy="189" r="7.5" fill="#1d1d1a"/><text x="32" y="192.2">6</text>
+          <circle cx="328" cy="110" r="7.5" fill="#1d1d1a"/><text x="328" y="113.2">7</text>
+          <circle cx="328" cy="396" r="7.5" fill="#1d1d1a"/><text x="328" y="399.2">7</text>
+        </g>
+      </svg>
+      <figcaption><span class="fig-n">FIG. 1</span>Vista di fronte. Misura più o meno 15 × 10 cm, come un libro piccolo.</figcaption>
+    </figure>
+
+    <figure>
+      <svg viewBox="0 0 360 410" aria-label="Fototrappola aperta">
+        <defs>
+          <clipPath id="scocca2"><rect x="110" y="18" width="210" height="362" rx="30"/></clipPath>
+          <linearGradient id="pila" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#8f8a76"/><stop offset=".45" stop-color="#d9d4c3"/><stop offset="1" stop-color="#8f8a76"/>
+          </linearGradient>
+        </defs>
+        <!-- sportello aperto, visto di sbieco -->
+        <path d="M110 40 L34 70 Q24 74 24 86 L24 316 Q24 328 34 332 L110 362 Z" fill="#6d6a4d" stroke="#3c3a2e" stroke-width="1.4"/>
+        <path d="M100 58 L42 82 Q36 85 36 92 L36 310 Q36 317 42 320 L100 344 Z" fill="#2c2c28"/>
+        <path d="M96 66 L46 87 L46 315 L96 336 Z" fill="none" stroke="#111" stroke-width="3.2" stroke-linejoin="round"/>
+
+        <!-- corpo con il retro mimetico -->
+        <g clip-path="url(#scocca2)">
+          <rect x="110" y="18" width="210" height="362" fill="#8a8463"/>
+          <path d="M106 40 C136 22 176 44 164 72 C154 96 120 90 110 112 Z" fill="#6d6a4d"/>
+          <path d="M246 10 C286 16 332 40 322 80 C298 70 274 92 250 70 C232 52 232 26 246 10Z" fill="#a49d7b"/>
+          <path d="M156 330 C186 306 232 318 246 342 C262 370 216 396 176 388 C148 382 138 348 156 330Z" fill="#6d6a4d"/>
+          <path d="M326 200 C298 210 282 240 298 262 C312 282 332 270 332 250Z" fill="#5a5840"/>
+        </g>
+        <rect x="110" y="18" width="210" height="362" rx="30" fill="none" stroke="#3c3a2e" stroke-width="1.4"/>
+        <!-- pannello interno -->
+        <rect x="126" y="34" width="178" height="330" rx="16" fill="#3b3b36" stroke="#1e1e1b"/>
+
+        <!-- schermo -->
+        <rect x="146" y="50" width="138" height="78" rx="4" fill="#111"/>
+        <rect x="151" y="55" width="128" height="68" rx="2" fill="#26352b"/>
+        <g font-family="IBM Plex Mono, monospace" font-size="8.2" fill="#c3d4b1">
+          <text x="158" y="70">MODO</text><text x="226" y="70">VIDEO</text>
+          <text x="158" y="84">DURATA</text><text x="226" y="84">20 s</text>
+          <text x="158" y="98">PAUSA</text><text x="226" y="98">30 s</text>
+          <text x="158" y="112">ORA</text><text x="226" y="112">22:57</text>
+        </g>
+        <rect x="153" y="88" width="124" height="13" fill="#c3d4b1" opacity=".16"/>
+
+        <!-- tasti -->
+        <circle cx="180" cy="160" r="20" fill="#232320" stroke="#141412"/>
+        <circle cx="180" cy="160" r="7" fill="#4a4a43"/>
+        <g fill="#8a8a7e">
+          <path d="M180 143 l4 5 h-8z"/><path d="M180 177 l4 -5 h-8z"/><path d="M163 160 l5 -4 v8z"/><path d="M197 160 l-5 -4 v8z"/>
+        </g>
+        <rect x="228" y="146" width="44" height="13" rx="6.5" fill="#232320"/>
+        <rect x="228" y="164" width="44" height="13" rx="6.5" fill="#232320"/>
+        <g font-size="7.2" font-weight="600" fill="#a6a69a" text-anchor="middle" letter-spacing=".5">
+          <text x="250" y="155">MENU</text><text x="250" y="173">OK</text>
+        </g>
+
+        <!-- interruttore -->
+        <g font-size="7" font-weight="600" fill="#bdbdb0" text-anchor="middle" letter-spacing=".4">
+          <text x="166" y="200">OFF</text><text x="215" y="200">SETUP</text><text x="264" y="200">ON</text>
+        </g>
+        <rect x="150" y="205" width="130" height="14" rx="7" fill="#161614"/>
+        <rect x="250" y="203" width="28" height="18" rx="5" fill="#e6e2d4" stroke="#111"/>
+
+        <!-- scheda SD e porta USB -->
+        <rect x="150" y="234" width="64" height="7" rx="1.5" fill="#0e0e0d"/>
+        <rect x="160" y="230" width="38" height="5" fill="#2b5aa8"/>
+        <rect x="244" y="232" width="26" height="11" rx="2" fill="#0e0e0d" stroke="#555"/>
+
+        <!-- vano pile: 8 stilo AA -->
+        <rect x="140" y="256" width="150" height="96" rx="7" fill="#1e1e1b"/>
+        <g id="pile">
+          <rect x="149" y="268" width="14" height="74" rx="3" fill="url(#pila)"/>
+          <rect x="166.5" y="268" width="14" height="74" rx="3" fill="url(#pila)"/>
+          <rect x="184" y="268" width="14" height="74" rx="3" fill="url(#pila)"/>
+          <rect x="201.5" y="268" width="14" height="74" rx="3" fill="url(#pila)"/>
+          <rect x="219" y="268" width="14" height="74" rx="3" fill="url(#pila)"/>
+          <rect x="236.5" y="268" width="14" height="74" rx="3" fill="url(#pila)"/>
+          <rect x="254" y="268" width="14" height="74" rx="3" fill="url(#pila)"/>
+          <rect x="271.5" y="268" width="14" height="74" rx="3" fill="url(#pila)"/>
+        </g>
+        <g fill="#4a4636">
+          <rect x="149" y="292" width="14" height="26"/><rect x="166.5" y="292" width="14" height="26"/><rect x="184" y="292" width="14" height="26"/><rect x="201.5" y="292" width="14" height="26"/>
+          <rect x="219" y="292" width="14" height="26"/><rect x="236.5" y="292" width="14" height="26"/><rect x="254" y="292" width="14" height="26"/><rect x="271.5" y="292" width="14" height="26"/>
+        </g>
+        <g fill="#cfcabb"><rect x="153" y="264" width="6" height="5" rx="1"/><rect x="170.5" y="337" width="6" height="7" rx="1" opacity="0"/><rect x="188" y="264" width="6" height="5" rx="1"/><rect x="223" y="264" width="6" height="5" rx="1"/><rect x="258" y="264" width="6" height="5" rx="1"/>
+          <rect x="170.5" y="341" width="6" height="5" rx="1"/><rect x="205.5" y="341" width="6" height="5" rx="1"/><rect x="240.5" y="341" width="6" height="5" rx="1"/><rect x="275.5" y="341" width="6" height="5" rx="1"/></g>
+
+        <!-- richiami -->
+        <g stroke="#1d1d1a" stroke-width=".8" fill="none">
+          <path d="M284 90 H330"/>
+          <path d="M272 162 H330" />
+          <path d="M278 212 H330"/>
+          <path d="M214 238 H330"/>
+          <path d="M290 330 H330"/>
+          <path d="M46 200 H14 V392 H40"/>
+        </g>
+        <g font-size="9" font-weight="700" text-anchor="middle" fill="#fff">
+          <circle cx="338" cy="90" r="7.5" fill="#1d1d1a"/><text x="338" y="93.2">8</text>
+          <circle cx="338" cy="162" r="7.5" fill="#1d1d1a"/><text x="338" y="165.2">8</text>
+          <circle cx="338" cy="212" r="7.5" fill="#1d1d1a"/><text x="338" y="215.2">9</text>
+          <circle cx="338" cy="238" r="7.5" fill="#1d1d1a"/><text x="338" y="241.2">10</text>
+          <circle cx="338" cy="330" r="7.5" fill="#1d1d1a"/><text x="338" y="333.2">11</text>
+          <circle cx="48" cy="392" r="7.5" fill="#1d1d1a"/><text x="48" y="395.2">12</text>
+        </g>
+      </svg>
+      <figcaption><span class="fig-n">FIG. 2</span>Aperta. Lo sportello si apre come un libro; dentro ci sono comandi, memoria e pile.</figcaption>
+    </figure>
+  </div>
+
+  <ol class="legenda">
+    <li data-n="1"><span><b>Luci a infrarossi.</b> Alcune decine di piccoli LED. Di notte illuminano la scena con una luce che noi non vediamo, e quasi tutti gli animali nemmeno.</span></li>
+    <li data-n="2"><span><b>Obiettivo.</b> Dietro c'è un sensore d'immagine, come quello di un telefono.</span></li>
+    <li data-n="3"><span><b>Sensore di movimento (PIR).</b> La finestrella bianca a quadretti: è una lente che «vede» il calore. È lei che fa scattare tutto.</span></li>
+    <li data-n="4"><span><b>Sensore di luce.</b> Un occhio minuscolo che decide se è giorno o notte.</span></li>
+    <li data-n="5"><span><b>Spia.</b> Lampeggia mentre si sistema la fototrappola; poi resta spenta per non farsi notare.</span></li>
+    <li data-n="6"><span><b>Cinghia.</b> Si stringe intorno al tronco: niente chiodi né viti nell'albero.</span></li>
+    <li data-n="7"><span><b>Ganci e occhiello.</b> Chiudono lo sportello contro pioggia e polvere; nell'occhiello si mette un lucchetto.</span></li>
+    <li data-n="8"><span><b>Schermo e tasti.</b> Servono a scegliere foto o video, la durata, la pausa, la data e l'ora.</span></li>
+    <li data-n="9"><span><b>Interruttore.</b> <i>Setup</i> per le regolazioni, <i>On</i> per lasciarla al lavoro.</span></li>
+    <li data-n="10"><span><b>Scheda di memoria.</b> Qui finiscono foto e video. Per vederli si estrae la scheda.</span></li>
+    <li data-n="11"><span><b>Pile.</b> Otto stilo AA. Durano mesi, ma si consumano soprattutto di notte, per accendere i LED.</span></li>
+    <li data-n="12"><span><b>Guarnizione.</b> Un bordo di gomma tiene fuori l'acqua: la fototrappola resta fuori anche sotto la pioggia e la neve.</span></li>
+  </ol>
+
+  <div class="numeri">
+    <div><strong>0,2–0,6 s</strong><span>dal passaggio dell'animale al primo scatto</span></div>
+    <div><strong>15–20 m</strong><span>fin dove «sente» un animale che passa</span></div>
+    <div><strong>10–20 m</strong><span>fin dove illumina, di notte</span></div>
+    <div><strong>8 pile AA</strong><span>da alcune settimane a qualche mese di lavoro</span></div>
+    <div><strong>−20/+60 °C</strong><span>funziona con il gelo e con il caldo</span></div>
+  </div>
+  <p class="nota-num">Valori tipici: cambiano da modello a modello.</p>
+
+  <div class="piede"><span>Le Camelie d'autunno · Sant'Andrea di Compito</span><span>1 / 4</span></div>
+</section>
+
+<!-- ============================ PAGINA 2 ============================ -->
+<section class="page">
+  <div class="testa"><span><b>Chi va là?</b> · Gli animali invisibili del Borgo delle Camelie</span><span>Come si accorge che passa qualcuno</span></div>
+
+  <div class="occhiello"><span>2</span>Come si accorge che passa qualcuno</div>
+  <h2>Non vede le forme: sente il calore che si sposta</h2>
+  <p class="attacco">Il sensore di movimento si chiama PIR, <em>infrarosso passivo</em>. Non manda fuori niente: raccoglie il calore che ogni corpo emana. Mammiferi e uccelli, come noi, sono più caldi del terreno e delle foglie. La lente a quadretti divide il bosco davanti in tante fasce: quando un corpo caldo passa da una fascia all'altra il sensore nota un cambiamento improvviso e sveglia la fotocamera.</p>
+
+  <figure class="blocco fig-lato">
+    <svg viewBox="0 0 640 300" aria-label="Vista dall'alto delle fasce di rilevamento">
+      <defs>
+        <symbol id="orma" viewBox="-10 -12 20 24" overflow="visible">
+          <ellipse cx="0" cy="4" rx="4.4" ry="3.8"/>
+          <ellipse cx="-4.6" cy="-2.6" rx="1.6" ry="2.1"/>
+          <ellipse cx="4.6" cy="-2.6" rx="1.6" ry="2.1"/>
+          <ellipse cx="-1.7" cy="-5.6" rx="1.6" ry="2.2"/>
+          <ellipse cx="1.7" cy="-5.6" rx="1.6" ry="2.2"/>
+        </symbol>
+      </defs>
+      <!-- distanze: 25 px = 1 m -->
+      <g fill="none" stroke="#c8c4b8" stroke-width=".8">
+        <path d="M197.4 93.3 A125 125 0 0 1 197.4 206.7"/>
+        <path d="M308.8 36.5 A250 250 0 0 1 308.8 263.5"/>
+      </g>
+      <!-- inquadratura -->
+      <g stroke="#1d1d1a" stroke-width="1" stroke-dasharray="5 4" fill="none">
+        <path d="M86 150 L725 -135"/><path d="M86 150 L725 435"/>
+      </g>
+      <!-- fasce sensibili del PIR -->
+      <g fill="#d0742a" fill-opacity=".26">
+        <path d="M86 150 L607.4 -54.3 L616.8 -28.6 Z"/>
+        <path d="M86 150 L623.2 -8.1 L630.3 18.3 Z"/>
+        <path d="M86 150 L635.0 39.3 L639.7 66.3 Z"/>
+        <path d="M86 150 L642.5 87.6 L644.9 114.8 Z"/>
+        <path d="M86 150 L645.8 136.3 L645.8 163.7 Z"/>
+        <path d="M86 150 L644.9 185.2 L642.5 212.4 Z"/>
+        <path d="M86 150 L639.7 233.7 L635.0 260.7 Z"/>
+        <path d="M86 150 L630.3 281.7 L623.2 308.1 Z"/>
+        <path d="M86 150 L616.8 328.6 L607.4 354.3 Z"/>
+      </g>
+      <!-- tronco visto dall'alto -->
+      <circle cx="50" cy="150" r="30" fill="#8a6a49"/>
+      <circle cx="50" cy="150" r="30" fill="none" stroke="#5b432c" stroke-width="3"/>
+      <g fill="none" stroke="#6f5338" stroke-width=".8"><circle cx="48" cy="152" r="20"/><circle cx="48" cy="151" r="12"/><circle cx="47.5" cy="151" r="5"/></g>
+      <rect x="78" y="136" width="10" height="28" rx="2" fill="#2f2e27"/>
+      <!-- tracce -->
+      <g fill="#1d1d1a">
+        <use href="#orma" width="15" height="18" x="-7.5" y="-9" transform="translate(357 18) rotate(156)"/>
+        <use href="#orma" width="15" height="18" x="-7.5" y="-9" transform="translate(356 45) rotate(156)"/>
+        <use href="#orma" width="15" height="18" x="-7.5" y="-9" transform="translate(377 63) rotate(156)"/>
+        <use href="#orma" width="15" height="18" x="-7.5" y="-9" transform="translate(376 90) rotate(156)"/>
+        <use href="#orma" width="15" height="18" x="-7.5" y="-9" transform="translate(397 108) rotate(156)"/>
+        <use href="#orma" width="15" height="18" x="-7.5" y="-9" transform="translate(396 135) rotate(156)"/>
+        <use href="#orma" width="15" height="18" x="-7.5" y="-9" transform="translate(416 153) rotate(156)"/>
+        <use href="#orma" width="15" height="18" x="-7.5" y="-9" transform="translate(415 180) rotate(156)"/>
+        <use href="#orma" width="15" height="18" x="-7.5" y="-9" transform="translate(436 198) rotate(156)"/>
+        <use href="#orma" width="15" height="18" x="-7.5" y="-9" transform="translate(435 225) rotate(156)"/>
+        <use href="#orma" width="15" height="18" x="-7.5" y="-9" transform="translate(456 243) rotate(156)"/>
+        <use href="#orma" width="15" height="18" x="-7.5" y="-9" transform="translate(455 270) rotate(156)"/>
+        <use href="#orma" width="15" height="18" x="-7.5" y="-9" transform="translate(475 288) rotate(156)"/>
+      </g>
+      <!-- punto in cui scatta -->
+      <circle cx="356" cy="45" r="13" fill="none" stroke="#1d1d1a" stroke-width="1.4"/>
+      <path d="M369 45 H474" stroke="#1d1d1a" stroke-width=".8"/>
+      <g font-size="13.5" fill="#1d1d1a">
+        <text x="478" y="41" font-weight="700">Scatta qui:</text>
+        <text x="478" y="57">entra nella prima fascia</text>
+        <text x="203" y="226" text-anchor="middle" fill="#55554d">5 m</text>
+        <text x="314" y="286" text-anchor="middle" fill="#55554d">10 m</text>
+        <path d="M258 234 L256 212" stroke="#1d1d1a" stroke-width=".8"/>
+        <text x="222" y="254" font-weight="700">fasce sensibili</text>
+        <text x="222" y="270">del sensore PIR</text>
+        <path d="M150 60 L196 100" stroke="#1d1d1a" stroke-width=".8"/>
+        <text x="92" y="38" font-weight="700">inquadratura</text>
+        <text x="92" y="54">dell'obiettivo</text>
+        <text x="50" y="202" text-anchor="middle">tronco</text>
+        <text x="488" y="298">passaggio di un animale</text>
+      </g>
+    </svg>
+    <figcaption><span class="fig-n">FIG. 3</span>La scena vista dall'alto. Negli spazi bianchi tra una fascia e l'altra il sensore non sente niente: è proprio il passaggio da «niente» a «caldo» che lo fa scattare. Le fasce arrivano a 15–20 metri.</figcaption>
+  </figure>
+
+  <figure class="blocco fig-lato">
+    <svg viewBox="0 0 640 190" aria-label="Segnale del sensore e sequenza di scatto">
+      <g font-size="13.5" fill="#1d1d1a">
+        <path d="M60 14 V112 M60 112 H630" stroke="#1d1d1a" stroke-width=".8" fill="none"/>
+        <text x="54" y="24" text-anchor="end" fill="#55554d">segnale</text>
+        <text x="610" y="129" text-anchor="end" fill="#55554d">tempo</text>
+        <path d="M614 125 H628 M623 121 L628 125 L623 129" stroke="#55554d" stroke-width="1.1" fill="none"/>
+        <path d="M60 46 H630 M60 98 H630" stroke="#8e8a7d" stroke-width=".8" stroke-dasharray="3 3"/>
+        <text x="626" y="40" text-anchor="end" font-size="12" fill="#55554d">soglia</text>
+        <path d="M60 72 L70 71 L80 73.5 L90 70.5 L100 72.5 L110 71 L120 73 L130 71.5 L140 72 L150 70.8 L160 73 L170 71.6 L180 72.4
+                 C190 72 194 60 200 44 C206 26 214 26 220 46 C228 74 232 104 240 108 C250 112 256 82 262 60 C268 34 276 30 282 52
+                 C290 82 296 104 304 100 C312 96 316 72 322 64 C328 58 332 70 338 78 C344 84 350 74 356 72 L366 73 L376 71.2 L386 72.8 L396 71.5 L406 72.4 L416 71 L426 73 L436 71.8 L446 72.6 L456 71.4 L466 72 L476 71 L486 73 L496 71.6 L506 72.2 L516 71.2 L526 72.8 L536 71.5 L546 72.4 L556 71 L566 73 L576 71.8 L586 72.6 L596 71.4 L606 72 L616 71.5 L626 72.2"
+              fill="none" stroke="#d0742a" stroke-width="2.2"/>
+        <path d="M201 14 V112" stroke="#1d1d1a" stroke-width="1.1"/>
+        <circle cx="201" cy="44" r="3.6" fill="#1d1d1a"/>
+        <text x="207" y="24" font-weight="700">l'animale entra in una fascia</text>
+        <text x="210" y="129" fill="#55554d" font-size="12.5">passa da una fascia all'altra: il segnale sale e scende</text>
+        <g transform="translate(0 140)">
+          <rect x="201" y="0" width="16" height="24" fill="#1d1d1a"/>
+          <rect x="217" y="0" width="230" height="24" fill="#d0742a"/>
+          <rect x="447" y="0" width="140" height="24" fill="#e8e5dc"/>
+          <path d="M587 0 V24" stroke="#1d1d1a"/>
+          <text x="332" y="17" text-anchor="middle" fill="#fff" font-weight="700">video, per esempio 20 s</text>
+          <text x="517" y="17" text-anchor="middle" font-weight="600">pausa, 30 s</text>
+          <text x="592" y="17" font-weight="600">pronta</text>
+          <path d="M209 24 V34" stroke="#1d1d1a" stroke-width=".8"/>
+          <text x="209" y="47" fill="#55554d">dopo 0,2–0,6 s: primo scatto</text>
+          <text x="195" y="17" text-anchor="end" font-weight="600">si sveglia</text>
+        </g>
+      </g>
+    </svg>
+    <figcaption><span class="fig-n">FIG. 4</span>Che cosa succede in pochi secondi. Durante la pausa la fototrappola non riprende, anche se passa qualcuno: serve a non riempire la memoria con lo stesso animale.</figcaption>
+  </figure>
+
+  <div class="due blocco">
+    <div class="riquadro">
+      <h3>Perché a volte non vede…</h3>
+      <ul>
+        <li>Lucertole, bisce e rospi non sono più caldi del terreno: per il sensore sono invisibili.</li>
+        <li>Nelle ore calde d'estate il suolo scaldato dal sole ha quasi la temperatura di un animale. La fototrappola «sente» meglio di notte e quando fa freddo.</li>
+        <li>Un animale che corre può uscire dall'inquadratura prima del primo scatto: nel video si vede solo una coda.</li>
+      </ul>
+    </div>
+    <div class="riquadro">
+      <h3>…e perché a volte scatta a vuoto</h3>
+      <ul>
+        <li>Un ramo o un ciuffo d'erba scaldati dal sole che si muovono col vento sembrano un corpo caldo.</li>
+        <li>Una macchia di sole che si sposta tra le foglie cambia la temperatura di un pezzo di terreno.</li>
+        <li>Per questo chi studia gli animali guarda centinaia di foto vuote per ogni animale: si chiamano <i>falsi scatti</i>.</li>
+      </ul>
+    </div>
+  </div>
+
+  <figure class="blocco fig-lato">
+    <svg viewBox="0 0 640 166" aria-label="Come si sistema la fototrappola">
+      <g font-size="13.5" fill="#1d1d1a">
+        <path d="M300 140 H640" stroke="#1d1d1a" stroke-width="1.2"/>
+        <path d="M0 140 H300" stroke="#1d1d1a" stroke-width="1.2"/>
+        <path d="M330 140 H470" stroke="#b5a582" stroke-width="7"/>
+        <text x="400" y="160" text-anchor="middle" fill="#55554d">sentiero</text>
+        <path d="M38 140 C45 124 48 100 48 4 H76 C76 100 79 124 88 140 Z" fill="#8a6a49"/>
+        <path d="M55 16 C57 50 55 90 57 132 M68 10 C66 44 69 96 70 134" stroke="#6f5338" stroke-width=".9" fill="none"/>
+        <path d="M87 92 L640 66 L640 140 L300 140 Z" fill="#d0742a" fill-opacity=".14"/>
+        <path d="M87 92 L640 66 M87 92 L300 140" stroke="#d0742a" stroke-width="1.1" fill="none"/>
+        <rect x="76" y="82" width="11" height="20" rx="2" fill="#2f2e27"/>
+        <path d="M108 92 V140 M104 92 h8" stroke="#1d1d1a" stroke-width=".8"/>
+        <text x="114" y="134" font-weight="700">50–100 cm</text>
+        <path d="M87 38 H400 M87 33 v10 M400 33 v10" stroke="#1d1d1a" stroke-width=".8"/>
+        <text x="244" y="30" text-anchor="middle" font-weight="700">3–5 m</text>
+        <text x="424" y="18" font-weight="700">Meglio rivolta a nord:</text>
+        <text x="424" y="35">il sole non entra nell'obiettivo</text>
+        <text x="424" y="52">e non scalda la scena davanti.</text>
+      </g>
+    </svg>
+    <figcaption><span class="fig-n">FIG. 5</span>Dove si mette. Legata a un tronco, un po' inclinata verso il basso, di traverso rispetto al sentiero: così l'animale attraversa più fasce e il sensore se ne accorge prima.</figcaption>
+  </figure>
+
+  <div class="piede"><span>Le Camelie d'autunno · Sant'Andrea di Compito</span><span>2 / 4</span></div>
+</section>
+
+<!-- ============================ PAGINA 3 ============================ -->
+<section class="page">
+  <div class="testa"><span><b>Chi va là?</b> · Gli animali invisibili del Borgo delle Camelie</span><span>Di giorno e di notte</span></div>
+
+  <div class="occhiello"><span>3</span>Di giorno e di notte</div>
+  <h2>Di giorno a colori, di notte in bianco e nero</h2>
+  <p class="attacco">Due fototrappole di questa caccia al tesoro, in un momento senza animali. A sinistra la scena è illuminata dal sole. A destra è buio pesto: la luce viene dai LED della fototrappola, invisibile ai nostri occhi.</p>
+
+  <div class="coppia blocco">
+    <figure>
+      <div class="etichetta et-giorno">Giorno · ore 18:35</div>
+      <img src="img/caccia-giorno.jpg" alt="Sentiero nel bosco ripreso di giorno a colori">
+    </figure>
+    <figure>
+      <div class="etichetta et-notte">Notte · ore 22:57</div>
+      <img src="img/caccia-notte.jpg" alt="Radura ripresa di notte a infrarossi, in bianco e nero">
+    </figure>
+  </div>
+
+  <figure class="blocco">
+    <svg viewBox="0 0 640 240" aria-label="Che cosa succede dentro la fototrappola di giorno e di notte">
+      <defs>
+        <marker id="pfr" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L8 4 L0 8z" fill="#8e2a21"/></marker>
+        <marker id="pfv" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L8 4 L0 8z" fill="#b8740f"/></marker>
+        <g id="foglia">
+          <path d="M0 0 C10 -26 40 -34 62 -30 C52 -10 30 4 0 0Z" fill="#5f7d3a"/>
+          <path d="M0 0 C18 -12 38 -22 62 -30" stroke="#3f5726" stroke-width="1" fill="none"/>
+          <path d="M-4 2 C-20 -16 -24 -38 -16 -54 C-4 -40 0 -20 -4 2Z" fill="#6f8f45"/>
+          <path d="M-4 2 C-10 -18 -14 -34 -16 -54" stroke="#3f5726" stroke-width="1" fill="none"/>
+        </g>
+        <g id="foglia-ir">
+          <path d="M0 0 C10 -26 40 -34 62 -30 C52 -10 30 4 0 0Z" fill="#e2e2dc"/>
+          <path d="M0 0 C18 -12 38 -22 62 -30" stroke="#9a9a92" stroke-width="1" fill="none"/>
+          <path d="M-4 2 C-20 -16 -24 -38 -16 -54 C-4 -40 0 -20 -4 2Z" fill="#d6d6cf"/>
+          <path d="M-4 2 C-10 -18 -14 -34 -16 -54" stroke="#9a9a92" stroke-width="1" fill="none"/>
+        </g>
+      </defs>
+
+      <g font-size="10.5" fill="#1d1d1a">
+        <!-- ======== GIORNO ======== -->
+        <rect x="0" y="0" width="312" height="240" fill="#fbf7ec"/>
+        <text x="14" y="22" font-weight="700" fill="#b8740f" letter-spacing="1.2">GIORNO</text>
+        <!-- sole -->
+        <circle cx="46" cy="58" r="13" fill="#e6a92c"/>
+        <g stroke="#e6a92c" stroke-width="2" stroke-linecap="round">
+          <path d="M46 37v-6 M46 79v6 M25 58h-6 M67 58h6 M31 43l-4-4 M61 73l4 4 M61 43l4-4 M31 73l-4 4"/>
+        </g>
+        <!-- raggi dal sole alla foglia -->
+        <path d="M58 72 L82 140" stroke="#b8740f" stroke-width="2" marker-end="url(#pfv)"/>
+        <path d="M66 68 L94 136" stroke="#8e2a21" stroke-width="1.6" stroke-dasharray="4 3" marker-end="url(#pfr)"/>
+        <use href="#foglia" transform="translate(70 190)"/>
+        <!-- riflessi verso la fotocamera -->
+        <path d="M118 166 L196 146" stroke="#b8740f" stroke-width="2" fill="none"/>
+        <path d="M118 174 L196 158" stroke="#8e2a21" stroke-width="1.6" stroke-dasharray="4 3" fill="none"/>
+        <!-- fotocamera in sezione -->
+        <rect x="190" y="104" width="110" height="94" rx="10" fill="#fff" stroke="#1d1d1a" stroke-width="1.2"/>
+        <path d="M204 126 C196 140 196 162 204 176 C212 162 212 140 204 126Z" fill="#cfe0e8" stroke="#1d1d1a" stroke-width=".9"/>
+        <path d="M204 147 L234 147" stroke="#b8740f" stroke-width="2"/>
+        <path d="M204 159 L230 159" stroke="#8e2a21" stroke-width="1.6" stroke-dasharray="4 3"/>
+        <path d="M238 147 L268 147" stroke="#b8740f" stroke-width="2" marker-end="url(#pfv)"/>
+        <!-- filtro -->
+        <rect x="231" y="128" width="6" height="46" fill="#7fb5c9" stroke="#1d1d1a" stroke-width=".8"/>
+        <path d="M223 155 l6 8 M229 155 l-6 8" stroke="#8e2a21" stroke-width="1.6"/>
+        <!-- sensore a colori -->
+        <g transform="translate(272 128)">
+          <rect x="0" y="0" width="14" height="46" fill="#1d1d1a"/>
+          <g><rect x="2" y="2" width="5" height="5" fill="#c43a2b"/><rect x="7" y="2" width="5" height="5" fill="#3f9a3c"/>
+             <rect x="2" y="7" width="5" height="5" fill="#3f9a3c"/><rect x="7" y="7" width="5" height="5" fill="#2f5fb8"/></g>
+          <g transform="translate(0 10)"><rect x="2" y="2" width="5" height="5" fill="#c43a2b"/><rect x="7" y="2" width="5" height="5" fill="#3f9a3c"/>
+             <rect x="2" y="7" width="5" height="5" fill="#3f9a3c"/><rect x="7" y="7" width="5" height="5" fill="#2f5fb8"/></g>
+          <g transform="translate(0 20)"><rect x="2" y="2" width="5" height="5" fill="#c43a2b"/><rect x="7" y="2" width="5" height="5" fill="#3f9a3c"/>
+             <rect x="2" y="7" width="5" height="5" fill="#3f9a3c"/><rect x="7" y="7" width="5" height="5" fill="#2f5fb8"/></g>
+          <g transform="translate(0 30)"><rect x="2" y="2" width="5" height="5" fill="#c43a2b"/><rect x="7" y="2" width="5" height="5" fill="#3f9a3c"/>
+             <rect x="2" y="7" width="5" height="5" fill="#3f9a3c"/><rect x="7" y="7" width="5" height="5" fill="#2f5fb8"/></g>
+        </g>
+        <!-- etichette giorno -->
+        <g font-size="9.5">
+          <path d="M234 128 V82" stroke="#1d1d1a" stroke-width=".7" fill="none"/>
+          <text x="300" y="50" text-anchor="end" font-weight="700">filtro: ferma l'infrarosso,</text>
+          <text x="300" y="62" text-anchor="end">lascia passare i colori</text>
+          <text x="300" y="74" text-anchor="end" fill="#55554d">(azzurrino, davanti al sensore)</text>
+          <text x="96" y="100">luce del sole:</text>
+          <text x="96" y="112">colori</text>
+          <text x="134" y="112" fill="#8e2a21">+ infrarosso</text>
+          <text x="196" y="218">il sensore vede i colori</text>
+        </g>
+
+        <!-- ======== NOTTE ======== -->
+        <rect x="328" y="0" width="312" height="240" fill="#eef0f4"/>
+        <text x="342" y="22" font-weight="700" fill="#2c3a55" letter-spacing="1.2">NOTTE</text>
+        <circle cx="384" cy="54" r="11" fill="#2c3a55"/>
+        <circle cx="389" cy="50" r="10" fill="#eef0f4"/>
+        <use href="#foglia-ir" transform="translate(398 190)"/>
+        <!-- fotocamera con LED -->
+        <rect x="518" y="104" width="110" height="94" rx="10" fill="#fff" stroke="#1d1d1a" stroke-width="1.2"/>
+        <rect x="512" y="82" width="12" height="40" rx="3" fill="#2f2e27"/>
+        <g fill="#8e2a21"><circle cx="518" cy="90" r="2.4"/><circle cx="518" cy="98" r="2.4"/><circle cx="518" cy="106" r="2.4"/><circle cx="518" cy="114" r="2.4"/></g>
+        <!-- LED → foglia -->
+        <path d="M510 94 L452 136" stroke="#8e2a21" stroke-width="1.6" stroke-dasharray="4 3" marker-end="url(#pfr)"/>
+        <path d="M510 106 L462 148" stroke="#8e2a21" stroke-width="1.6" stroke-dasharray="4 3" marker-end="url(#pfr)"/>
+        <!-- foglia → fotocamera -->
+        <path d="M446 168 L532 154" stroke="#8e2a21" stroke-width="1.6" stroke-dasharray="4 3"/>
+        <path d="M532 126 C524 140 524 162 532 176 C540 162 540 140 532 126Z" fill="#cfe0e8" stroke="#1d1d1a" stroke-width=".9"/>
+        <path d="M532 153 L596 153" stroke="#8e2a21" stroke-width="1.6" stroke-dasharray="4 3" marker-end="url(#pfr)"/>
+        <!-- filtro spostato -->
+        <rect x="559" y="104" width="6" height="40" fill="#7fb5c9" stroke="#1d1d1a" stroke-width=".8" transform="rotate(-62 562 110)"/>
+        <!-- sensore in bianco e nero -->
+        <g transform="translate(600 128)">
+          <rect x="0" y="0" width="14" height="46" fill="#1d1d1a"/>
+          <g fill="#9b9b94"><rect x="2" y="2" width="5" height="5"/><rect x="7" y="2" width="5" height="5" fill="#bdbdb6"/><rect x="2" y="7" width="5" height="5" fill="#d7d7d0"/><rect x="7" y="7" width="5" height="5" fill="#8a8a83"/>
+            <rect x="2" y="12" width="5" height="5" fill="#bdbdb6"/><rect x="7" y="12" width="5" height="5"/><rect x="2" y="17" width="5" height="5" fill="#8a8a83"/><rect x="7" y="17" width="5" height="5" fill="#d7d7d0"/>
+            <rect x="2" y="22" width="5" height="5" fill="#d7d7d0"/><rect x="7" y="22" width="5" height="5" fill="#8a8a83"/><rect x="2" y="27" width="5" height="5"/><rect x="7" y="27" width="5" height="5" fill="#bdbdb6"/>
+            <rect x="2" y="32" width="5" height="5" fill="#8a8a83"/><rect x="7" y="32" width="5" height="5" fill="#d7d7d0"/><rect x="2" y="37" width="5" height="5" fill="#bdbdb6"/><rect x="7" y="37" width="5" height="5"/></g>
+        </g>
+        <!-- etichette notte -->
+        <g font-size="9.5">
+          <path d="M580 70 L572 96" stroke="#1d1d1a" stroke-width=".7" fill="none"/>
+          <text x="628" y="50" text-anchor="end" font-weight="700">il filtro si alza: «clic»</text>
+          <text x="628" y="62" text-anchor="end">(si sente quando fa buio)</text>
+          <text x="440" y="96" text-anchor="end" fill="#8e2a21">i LED illuminano</text>
+          <text x="440" y="108" text-anchor="end" fill="#8e2a21">con l'infrarosso</text>
+          <text x="524" y="218">il sensore vede solo</text>
+          <text x="524" y="230">chiaro e scuro</text>
+        </g>
+        <g font-size="9.5" fill="#55554d"><text x="14" y="232">foglia verde</text><text x="342" y="232">la stessa foglia appare chiarissima</text></g>
+      </g>
+    </svg>
+    <figcaption><span class="fig-n">FIG. 6</span>Dentro la fototrappola. <b>Giorno:</b> un filtro toglie l'infrarosso, che altrimenti falserebbe i colori. <b>Notte:</b> il sensore di luce sposta il filtro e accende i LED. La luce dei LED ha un solo «colore», per giunta invisibile: il sensore può misurare solo quanta ne torna indietro, cioè chiaro e scuro.</figcaption>
+  </figure>
+
+  <figure class="blocco fig-lato">
+    <svg viewBox="0 0 680 124" aria-label="Spettro della luce: visibile e infrarosso">
+      <defs>
+        <linearGradient id="spettro" x1="0" x2="1">
+          <stop offset="0" stop-color="#5b2aa7"/>
+          <stop offset=".083" stop-color="#2b4bd6"/>
+          <stop offset=".15" stop-color="#1c9bd6"/>
+          <stop offset=".2" stop-color="#2fb54a"/>
+          <stop offset=".283" stop-color="#d4dc22"/>
+          <stop offset=".317" stop-color="#f6b419"/>
+          <stop offset=".367" stop-color="#ef5a26"/>
+          <stop offset=".46" stop-color="#b0191e"/>
+          <stop offset=".54" stop-color="#3a0d0d"/>
+          <stop offset="1" stop-color="#1f1a1a"/>
+        </linearGradient>
+        <pattern id="tratteggio" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0 V6" stroke="#fff" stroke-opacity=".12" stroke-width="2"/></pattern>
+      </defs>
+      <g font-size="14" fill="#1d1d1a">
+        <!-- 400 nm = x 40, 1000 nm = x 640 : 1 px per nm -->
+        <rect x="40" y="40" width="600" height="26" fill="url(#spettro)"/>
+        <rect x="340" y="40" width="300" height="26" fill="url(#tratteggio)"/>
+        <g stroke="#1d1d1a" stroke-width=".8">
+          <path d="M40 66v5 M140 66v5 M240 66v5 M340 66v5 M440 66v5 M540 66v5 M639.5 66v5"/>
+        </g>
+        <g fill="#55554d" font-size="12" text-anchor="middle">
+          <text x="40" y="84">400</text><text x="140" y="84">500</text><text x="240" y="84">600</text><text x="340" y="84">700</text><text x="440" y="84">800</text><text x="540" y="84">900</text><text x="640" y="84">1000 nm</text>
+        </g>
+        <path d="M40 34 V27 H339 V34" stroke="#1d1d1a" stroke-width=".9" fill="none"/>
+        <text x="190" y="19" text-anchor="middle" font-weight="700">i colori che vediamo noi</text>
+        <path d="M341 34 V27 H640 V34" stroke="#8e2a21" stroke-width=".9" fill="none"/>
+        <text x="490" y="19" text-anchor="middle" font-weight="700" fill="#8e2a21">infrarosso: per noi è buio</text>
+        <path d="M490 40 V66" stroke="#fff" stroke-width="1.6"/>
+        <path d="M580 40 V66" stroke="#fff" stroke-width="1.6"/>
+        <path d="M490 66 V96 M580 66 V96" stroke="#1d1d1a" stroke-width=".8"/>
+        <text x="485" y="101" text-anchor="end" font-weight="700">LED a 850 nm</text>
+        <text x="485" y="117" text-anchor="end">debole bagliore rosso</text>
+        <text x="585" y="101" font-weight="700">a 940 nm</text>
+        <text x="585" y="117">invisibili</text>
+      </g>
+    </svg>
+    <figcaption><span class="fig-n">FIG. 7</span>I colori della luce, in nanometri (nm). Il sensore della fototrappola vede fino a circa 1000 nm: anche l'infrarosso dei LED.</figcaption>
+  </figure>
+
+
+  <div class="blocco">
+    <table class="confronto">
+      <thead><tr><th>In breve</th><th class="g">Di giorno</th><th class="n">Di notte</th></tr></thead>
+      <tbody>
+        <tr><th>Luce</th><td>il sole</td><td>i LED a infrarossi della fototrappola</td></tr>
+        <tr><th>Colori</th><td>sì</td><td>no: bianco, nero e grigi</td></tr>
+        <tr><th>Movimento</th><td>nitido anche chi corre</td><td>chi si muove esce un po' mosso</td></tr>
+        <tr><th>Distanza</th><td>si vede fino in fondo</td><td>oltre 10–20 m è tutto nero</td></tr>
+        <tr><th>Occhi</th><td>normali</td><td>spesso brillano, bianchissimi</td></tr>
+        <tr><th>Foglie</th><td>verdi</td><td>chiare, quasi bianche</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="piede"><span>Le Camelie d'autunno · Sant'Andrea di Compito</span><span>3 / 4</span></div>
+</section>
+
+<!-- ============================ PAGINA 4 ============================ -->
+<section class="page">
+  <div class="testa"><span><b>Chi va là?</b> · Gli animali invisibili del Borgo delle Camelie</span><span>Leggere un'immagine</span></div>
+
+  <div class="occhiello"><span>4</span>Leggere un'immagine</div>
+  <h2>Stesso posto, giorno e notte</h2>
+
+  <div class="coppia">
+    <figure>
+      <div class="etichetta et-giorno">Giorno · ore 15:02</div>
+      <img src="img/cct-torrente-giorno.jpg" alt="Letto di un torrente di giorno, a colori">
+      <figcaption>Il letto asciutto di un torrente. La cosa più chiara è il fango secco; le canne sono verdi e scure.</figcaption>
+    </figure>
+    <figure>
+      <div class="etichetta et-notte">Notte · ore 3:27</div>
+      <div class="foto-nota">
+        <img src="img/cct-torrente-notte.jpg" alt="Lo stesso torrente di notte, all'infrarosso">
+        <svg viewBox="0 0 1600 1000" preserveAspectRatio="none">
+          <g fill="none" stroke="#fff" stroke-width="6">
+            <ellipse cx="1330" cy="200" rx="200" ry="150"/>
+            <ellipse cx="160" cy="560" rx="140" ry="320" stroke-dasharray="26 16"/>
+          </g>
+        </svg>
+      </div>
+      <figcaption>Di notte si capovolge: <b>le foglie diventano chiare</b> (cerchio), perché le piante rimandano indietro molto infrarosso. <b>Il bordo resta buio</b> (tratteggio): i LED illuminano bene solo il centro.</figcaption>
+    </figure>
+  </div>
+
+  <div class="coppia blocco">
+    <figure>
+      <div class="etichetta et-giorno">Giorno · ore 13:47</div>
+      <img src="img/cct-gatto-giorno.jpg" alt="Gatto tricolore di giorno">
+      <figcaption>Un gatto tricolore: si distinguono il nero, l'arancio e il bianco del pelo.</figcaption>
+    </figure>
+    <figure>
+      <div class="etichetta et-notte">Notte · ore 23:18</div>
+      <img src="img/cct-gatto-notte.jpg" alt="Gatto di notte all'infrarosso">
+      <figcaption>Un altro gatto nello stesso punto (c'è lo stesso tubo nero piegato ad arco). Del pelo si capisce solo se è chiaro o scuro, e i contorni sono un po' mossi.</figcaption>
+    </figure>
+  </div>
+
+  <div class="blocco">
+    <h3>La striscia in fondo a ogni immagine</h3>
+    <svg viewBox="0 -58 1280 150" aria-label="Striscia dei dati di una fototrappola" style="margin-top:1mm">
+      <image href="img/striscia-notte.png" x="0" y="0" width="1280" height="39"/>
+      <g stroke="#1d1d1a" stroke-width="1.6" fill="none">
+        <path d="M76 -4 V-24"/><path d="M515 -4 V-24"/><path d="M866 -4 V-24"/><path d="M1200 -4 V-24"/>
+        <path d="M720 43 V60"/><path d="M768 43 V60"/><path d="M1030 43 V60"/>
+      </g>
+      <g font-size="23" fill="#1d1d1a" font-weight="700">
+        <text x="76" y="-32" text-anchor="middle">marca</text>
+        <text x="515" y="-32" text-anchor="middle">nome della fototrappola</text>
+        <text x="866" y="-32" text-anchor="middle">temperatura</text>
+        <text x="1200" y="-32" text-anchor="middle">ora</text>
+        <text x="712" y="84" text-anchor="end">pile</text>
+        <text x="776" y="84">fase della luna</text>
+        <text x="1030" y="84" text-anchor="middle">data</text>
+      </g>
+    </svg>
+    <p style="font-size:9.2pt;margin-top:1mm">Su ogni foto e ogni video la fototrappola stampa quando è stata ripresa la scena. La luna non dice se è giorno o notte: è la fase lunare, che interessa a chi studia gli animali, perché con la luna piena alcuni si muovono con più prudenza. Ogni marca scrive la striscia a modo suo.</p>
+  </div>
+
+  <div class="prova blocco">
+    <h3>Alle tappe, prova a chiederti</h3>
+    <ol>
+      <li>Il video è a colori o in bianco e nero? Allora era giorno o notte?</li>
+      <li>Che ore segna la striscia in basso? Che temperatura faceva?</li>
+      <li>Gli occhi dell'animale brillano? Di notte molti animali rimandano indietro la luce dei LED, come i gatti con i fari di un'auto.</li>
+    </ol>
+  </div>
+
+  <p class="crediti"><b>Fotografie.</b> Pagina 3: fotogrammi dei video della caccia «Chi va là?», scelti senza animali per non svelare le tappe. Pagina 4: Caltech Camera Traps (S. Beery, G. Van Horn, P. Perona, 2018), fototrappole nel sud della California, distribuite da LILA BC con licenza CDLA-Permissive 1.0; foto ritagliate e, quelle notturne, schiarite per la stampa. <b>Disegni e schemi:</b> originali.</p>
+
+  <div class="piede"><span>Le Camelie d'autunno · Sant'Andrea di Compito</span><span>4 / 4</span></div>
+</section>
+
+</body>
+</html>
