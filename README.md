@@ -6,3 +6,9 @@ Pagina della caccia al tesoro con fototrappole per «Le Camelie d'autunno» a Sa
 - `video/t1.mp4` … `video/t9.mp4`: le clip (H.264, 480-720p, 15-45 s, circa 1,4 MB l'una).
 
 Il nome dell'animale non compare mai in questi file.
+
+## Scheda da stampare
+
+- `stampa/fototrappola.pdf`: 4 pagine A4 su com'è fatta una fototrappola, come scatta e cosa cambia tra giorno e notte.
+- `stampa/stand-a3.pdf`: 2 manifesti A3 per lo stand (com'è fatta e come scatta; giorno e notte), con testi grandi e meno parole.
+- I sorgenti sono `stampa/fototrappola.html` e `stampa/stand-a3.html` (disegni in SVG, font e foto in `stampa/font` e `stampa/img`). Per rigenerare i PDF: `node stampa/build.js`.
