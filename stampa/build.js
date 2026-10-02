@@ -1,19 +1,21 @@
-// Genera fototrappola.pdf (A4) da fototrappola.html con Chromium.
-// Uso: node build.js   [png]  → con "png" salva anche le anteprime delle pagine
+// Genera i PDF da stampare con Chromium:
+//   fototrappola.html → fototrappola.pdf (4 pagine A4)
+//   stand-a3.html     → stand-a3.pdf     (2 manifesti A3)
+// Uso: node build.js            (tutti e due)
+//      node build.js stand-a3   (solo uno)
 const { chromium } = require('playwright');
 const path = require('path');
+
+const tutti = ['fototrappola', 'stand-a3'];
+const scelti = process.argv[2] ? [process.argv[2].replace(/\.html$/, '')] : tutti;
 
 (async () => {
   const browser = await chromium.launch();
   const page = await browser.newPage();
-  await page.goto('file://' + path.join(__dirname, 'fototrappola.html'), { waitUntil: 'networkidle' });
-  await page.evaluate(() => document.fonts.ready);
-  await page.pdf({ path: path.join(__dirname, 'fototrappola.pdf'), format: 'A4', printBackground: true, preferCSSPageSize: true });
-  if (process.argv[2] === 'png') {
-    await page.setViewportSize({ width: 794, height: 1123 });
-    const n = await page.locator('.page').count();
-    for (let i = 0; i < n; i++)
-      await page.locator('.page').nth(i).screenshot({ path: path.join(process.argv[3] || __dirname, `pagina-${i + 1}.png`), scale: 'device' });
+  for (const nome of scelti) {
+    await page.goto('file://' + path.join(__dirname, nome + '.html'), { waitUntil: 'networkidle' });
+    await page.evaluate(() => document.fonts.ready);
+    await page.pdf({ path: path.join(__dirname, nome + '.pdf'), printBackground: true, preferCSSPageSize: true });
   }
   await browser.close();
 })();
